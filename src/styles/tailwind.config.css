@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #aa1826;
+  --color-primary-light: #4bc2e8;
+  --color-primary-lighter: #dff7ff;
+  --color-primary-dark: #0a7fb0;
+  --color-secondary: #6b7280;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #898484;
+  --color-light-gray: #f6f9fa;
+  --color-secondary-yellow: #fdd400;
+}
