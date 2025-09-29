@@ -8,12 +8,12 @@ import CreateNewPassword from "./createNewPassword/createNewPassword";
 
 export const authenticationRoutes: RouteObject[] = [
   {
-    path: "",
+    path: "/auth",
     element: <AuthenticationLayout />,
     children: [
       { index: true, element: <Login /> },
-      { path: "Register", element: <Register /> },
-      { path: "ForgetPassword", element: <ForgetPassword /> },
+      { path: "register", element: <Register /> },
+      { path: "forget-password", element: <ForgetPassword /> },
       {
         path: "verify-otp",
         element: <VerifyOtp />,
