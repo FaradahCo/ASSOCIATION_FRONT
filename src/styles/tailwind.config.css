@@ -13,3 +13,25 @@
   --color-light-gray: #f6f9fa;
   --color-secondary-yellow: #fdd400;
 }
+
+/* Custom styles for active menu item */
+
+.main-layout {
+  .ant-menu-item-selected {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+  }
+
+  .ant-menu-item-selected .anticon {
+    color: white !important;
+  }
+
+  .ant-menu-item-selected:hover {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+  }
+
+  .ant-menu-item-selected:hover .anticon {
+    color: white !important;
+  }
+}
