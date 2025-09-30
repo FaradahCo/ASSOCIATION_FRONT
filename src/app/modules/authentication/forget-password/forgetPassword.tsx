@@ -1,5 +1,3 @@
-import React from "react";
-
-const ForgetPassword: React.FC = () => <></>;
+const ForgetPassword = () => <></>;
 
 export default ForgetPassword;

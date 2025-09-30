@@ -1,4 +1,16 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+body {
+  font-family: 'Almarai', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.text-subtitle,
+p.text-sm,
+.text-gray-600,
+.text-gray-500 {
+  color: #6c737f !important;
+}
 
 @theme {
   --color-primary: #aa1826;
@@ -12,6 +24,10 @@
   --color-info: #898484;
   --color-light-gray: #f6f9fa;
   --color-secondary-yellow: #fdd400;
+  --color-subtitle: #6c737f;
+
+  --font-family-sans: 'Almarai', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 /* Custom styles for active menu item */

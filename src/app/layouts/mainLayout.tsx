@@ -1,17 +1,17 @@
-import { Layout, Menu, Button, theme } from "antd";
-import { Content, Header } from "antd/es/layout/layout";
-import Sider from "antd/es/layout/Sider";
+import { Layout, Menu, Button, theme } from 'antd';
+import { Content, Header } from 'antd/es/layout/layout';
+import Sider from 'antd/es/layout/Sider';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
-} from "@ant-design/icons";
-import React, { useState } from "react";
-import { useNavigate, useLocation, Outlet } from "react-router";
+} from '@ant-design/icons';
+import { useState } from 'react';
+import { useNavigate, useLocation, Outlet } from 'react-router';
 
-const MainLayout: React.FC = () => {
+const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,28 +22,28 @@ const MainLayout: React.FC = () => {
   // Menu items with navigation
   const menuItems = [
     {
-      key: "1",
+      key: '1',
       icon: <UserOutlined />,
-      label: "Dashboard",
-      path: "/",
+      label: 'Dashboard',
+      path: '/',
     },
     {
-      key: "2",
+      key: '2',
       icon: <VideoCameraOutlined />,
-      label: "Reports",
-      path: "/reports",
+      label: 'Reports',
+      path: '/reports',
     },
     {
-      key: "3",
+      key: '3',
       icon: <UploadOutlined />,
-      label: "Find Requests",
-      path: "/find-requests",
+      label: 'Find Requests',
+      path: '/find-requests',
     },
     {
-      key: "4",
+      key: '4',
       icon: <UploadOutlined />,
-      label: "Supports",
-      path: "/supports",
+      label: 'Supports',
+      path: '/supports',
     },
   ];
 
@@ -59,13 +59,13 @@ const MainLayout: React.FC = () => {
   const getSelectedKey = () => {
     const currentPath = location.pathname;
     const selectedItem = menuItems.find((item) => item.path === currentPath);
-    return selectedItem ? [selectedItem.key] : ["1"];
+    return selectedItem ? [selectedItem.key] : ['1'];
   };
 
   return (
-    <Layout className="h-screen main-layout">
+    <Layout className='h-screen main-layout'>
       <Sider
-        className="bg-white!"
+        className='bg-white!'
         trigger={null}
         collapsible
         collapsed={collapsed}
@@ -73,39 +73,39 @@ const MainLayout: React.FC = () => {
         collapsedWidth={80}
       >
         <img
-          src="/images/logo.svg"
-          alt="logo"
-          className="p-5 border border-gray-200 w-full"
+          src='/images/logo.svg'
+          alt='logo'
+          className='p-5 border border-gray-200 w-full'
         />
         <Menu
-          className="py-5!"
-          theme="light"
-          mode="inline"
+          className='py-5!'
+          theme='light'
+          mode='inline'
           selectedKeys={getSelectedKey()}
           onClick={handleMenuClick}
           style={{
-            backgroundColor: "transparent",
+            backgroundColor: 'transparent',
           }}
           items={menuItems}
         />
       </Sider>
       <Layout>
-        <Header className="bg-white! p-0!">
+        <Header className='bg-white! p-0!'>
           <Button
-            type="text"
+            type='text'
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
-              fontSize: "16px",
+              fontSize: '16px',
               width: 64,
               height: 64,
             }}
           />
         </Header>
         <Content
-          className="h-screen!"
+          className='h-screen!'
           style={{
-            margin: "24px 16px",
+            margin: '24px 16px',
             padding: 24,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,

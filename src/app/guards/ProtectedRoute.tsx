@@ -1,12 +1,11 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet } from 'react-router';
 
 export const isAuthenticated = () => {
-  return true;
+  return false;
 };
 
-const ProtectedRoute: React.FC = () => {
-  return isAuthenticated() ? <Outlet /> : <Navigate to="/auth" replace />;
+const ProtectedRoute = () => {
+  return isAuthenticated() ? <Outlet /> : <Navigate to='/auth' replace />;
 };
 
 export default ProtectedRoute;

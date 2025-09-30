@@ -1,22 +1,30 @@
-import React from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from 'react-router';
+import AuthSplit from '../../layouts/AuthSplit';
+import { useTranslation } from 'react-i18next';
+import LoginImg from '../../assets/loginImg.svg';
 
-const AuthenticationLayout: React.FC = () => {
+
+const AuthenticationLayout = () => {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+
+  const isLogin = pathname.endsWith('/auth/login');
+
+  const title = isLogin ? t('login.pageTitle') : t('login.title');
+  const description = isLogin ? t('login.pageDescription') : '';
+  const rightTitle = t('login.rightTitle');
+  const rightSubtitle = t('login.rightSub');
+
   return (
-    <div className="relative h-screen p-4">
-      <div className="hidden lg:block absolute inset-0 lg:left-1/4 p-4">
-        <img
-          className="w-full h-full object-cover rounded-4xl"
-          src="/images/auth-background.png"
-          title="auth-background"
-          alt="auth-background"
-        />
-      </div>
-
-      <div className="relative z-10 w-full lg:w-1/3 h-full overflow-y-auto flex flex-col justify-center">
-        <Outlet />
-      </div>
-    </div>
+    <AuthSplit
+      title={title}
+      description={description}
+      rightTitle={rightTitle}
+      rightSubtitle={rightSubtitle}
+      rightIllustration={<img src={LoginImg} alt='Login Illustration' />}
+    >
+      <Outlet />
+    </AuthSplit>
   );
 };
 

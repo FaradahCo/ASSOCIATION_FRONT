@@ -1,3 +1,0 @@
-This file is created to test git author email and username settings.
-Expected author: ibrahimnour@faradah.sa
-Expected username: ibrahimnour-collab

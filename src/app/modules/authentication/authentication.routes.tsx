@@ -11,7 +11,7 @@ export const authenticationRoutes: RouteObject[] = [
     path: "/auth",
     element: <AuthenticationLayout />,
     children: [
-      { index: true, element: <Login /> },
+      { index: true, path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "forget-password", element: <ForgetPassword /> },
       {
