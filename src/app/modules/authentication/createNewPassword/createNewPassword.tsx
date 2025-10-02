@@ -1,6 +1,4 @@
-import React from "react";
-
-const CreateNewPassword: React.FC = () => {
+const CreateNewPassword = () => {
   return (
     <div>
       <h2>Create New Password Page</h2>

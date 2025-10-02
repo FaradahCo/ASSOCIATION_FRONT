@@ -1,6 +1,4 @@
-import React from "react";
-
-const VerifyOtp: React.FC = () => {
+const VerifyOtp = () => {
   return (
     <div>
       <h2>Verify OTP Page</h2>

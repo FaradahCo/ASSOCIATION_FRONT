@@ -1,22 +1,71 @@
-import React from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from 'react-router';
+import AuthSplit from '../../layouts/AuthSplit';
+import { useTranslation } from 'react-i18next';
+import LoginImg from '../../assets/loginImg.svg';
+import ForgetPasswordImg from '../../assets/forget-password.svg';
+import OtpImg from '../../assets/password_otp.svg';
+import PadlockImg from '../../assets/Padlock.svg';
 
-const AuthenticationLayout: React.FC = () => {
+const AuthenticationLayout = () => {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+
+  // Determine the page type and content
+  const getPageContent = () => {
+    if (pathname.endsWith('/auth/login') || pathname === '/auth') {
+      return {
+        title: t('login.pageTitle'),
+        description: t('login.pageDescription'),
+        illustration: <img src={LoginImg} alt='Login Illustration' />,
+      };
+    }
+    
+    if (pathname.endsWith('/forgot-password')) {
+      return {
+        title: t('forgotPassword.title'),
+        description: t('forgotPassword.subtitle'),
+        illustration: <img src={ForgetPasswordImg} alt='Forgot Password Illustration' />,
+      };
+    }
+    
+    if (pathname.endsWith('/otp')) {
+      return {
+        title: t('otp.title'),
+        description: t('otp.subtitle', { email: '', time: '' }).replace('{{email}}', '').replace('{{time}}', ''),
+        illustration: <img src={OtpImg} alt='OTP Verification Illustration' />,
+      };
+    }
+    
+    if (pathname.includes('/reset-password/')) {
+      return {
+        title: t('resetPassword.title'),
+        description: t('resetPassword.subtitle'),
+        illustration: <img src={PadlockImg} alt='Reset Password Illustration' />,
+      };
+    }
+    
+    // Default fallback
+    return {
+      title: t('login.title'),
+      description: '',
+      illustration: <img src={LoginImg} alt='Auth Illustration' />,
+    };
+  };
+
+  const { title, description, illustration } = getPageContent();
+  const rightTitle = t('login.rightTitle');
+  const rightSubtitle = t('login.rightSub');
+
   return (
-    <div className="relative h-screen p-4">
-      <div className="hidden lg:block absolute inset-0 lg:left-1/4 p-4">
-        <img
-          className="w-full h-full object-cover rounded-4xl"
-          src="/images/auth-background.png"
-          title="auth-background"
-          alt="auth-background"
-        />
-      </div>
-
-      <div className="relative z-10 w-full lg:w-1/3 h-full overflow-y-auto flex flex-col justify-center">
-        <Outlet />
-      </div>
-    </div>
+    <AuthSplit
+      title={title}
+      description={description}
+      rightTitle={rightTitle}
+      rightSubtitle={rightSubtitle}
+      rightIllustration={illustration}
+    >
+      <Outlet />
+    </AuthSplit>
   );
 };
 

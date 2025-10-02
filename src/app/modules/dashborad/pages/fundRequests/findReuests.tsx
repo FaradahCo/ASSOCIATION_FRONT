@@ -1,6 +1,4 @@
-import React from "react";
-
-const FinalRequests: React.FC = () => {
+const FinalRequests = () => {
   return <>Final Requests</>;
 };
 
