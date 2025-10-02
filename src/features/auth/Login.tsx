@@ -34,7 +34,7 @@ const Login = () => {
             {t('login.remember')}
           </Checkbox>
           <Link
-            to='/auth/forget-password'
+            to='/auth/forgot-password'
             className='text-sm font-medium transition-colors'
             style={{ color: 'var(--Brand-color, #AA1826)' }}
           >
