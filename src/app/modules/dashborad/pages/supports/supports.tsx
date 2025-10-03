@@ -1,6 +1,6 @@
 import React from "react";
 
-const Supports = () => {
+const Supports: React.FC = () => {
   return <>Supports</>;
 };
 

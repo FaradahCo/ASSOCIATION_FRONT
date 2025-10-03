@@ -1,6 +1,6 @@
 import React from "react";
 
-const Reports = () => {
+const Reports: React.FC = () => {
   return <>Reports Component</>;
 };
 
