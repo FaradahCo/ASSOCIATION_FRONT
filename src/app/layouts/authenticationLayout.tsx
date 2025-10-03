@@ -1,20 +1,39 @@
 import React from "react";
-import { Outlet } from "react-router";
+import { Outlet, useMatches } from "react-router";
+import { Card } from "antd";
+
+// Define the type for the context data
+export type AuthLayoutContextType = {
+  image?: string;
+  title?: string;
+  formTitle?: string;
+  formDescription?: string;
+};
 
 const AuthenticationLayout: React.FC = () => {
+  const matches = useMatches();
+  const currentMatch = matches[matches.length - 1];
+  const routeData = currentMatch.loaderData as AuthLayoutContextType;
+
   return (
-    <div className="relative h-screen p-4">
-      <div className="hidden lg:block absolute inset-0 lg:left-1/4 p-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 h-screen">
+      <div className="flex items-center justify-center p-4 ">
+        <Card className="shadow w-full max-w-lg rounded-3xl!">
+          <h1 className="font-semibold text-2xl mb-2">{routeData.formTitle}</h1>
+          <p className="mb-2">{routeData.formDescription}</p>
+          <div className="mt-10">
+            <Outlet />
+          </div>
+        </Card>
+      </div>
+
+      <div className="hidden lg:block p-4">
         <img
           className="w-full h-full object-cover rounded-4xl"
-          src="/images/auth-background.png"
+          src={routeData.image}
           title="auth-background"
           alt="auth-background"
         />
-      </div>
-
-      <div className="relative z-10 w-full lg:w-1/3 h-full overflow-y-auto flex flex-col justify-center">
-        <Outlet />
       </div>
     </div>
   );
