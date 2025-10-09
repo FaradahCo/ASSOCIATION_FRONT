@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import Button from '../../../../components/ui/Button';
-import Card from '../../../../components/ui/Card';
+import { Result, Button, Alert } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 export default function ResultRejected() {
   const { t } = useTranslation();
@@ -9,43 +9,49 @@ export default function ResultRejected() {
 
   return (
     <div className='min-h-screen flex items-center justify-center p-4'>
-      <Card className='w-full max-w-md'>
-        <div className='text-center'>
-          <div className='inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 bg-red-100'>
-            <span className='text-4xl'>✕</span>
-          </div>
-          <h1 className='text-2xl font-bold text-gray-900 mb-3'>
-            {t('signup.result.rejected.title')}
-          </h1>
-          <p className='text-sm text-gray-600 mb-8'>
-            {t('signup.result.rejected.message')}
-          </p>
-
-          <div className='p-4 rounded-lg bg-red-50 border border-red-200 mb-8'>
-            <p className='text-sm text-red-800'>
-              {t('signup.result.rejected.note')}
-            </p>
-          </div>
-
-          <div className='space-y-3'>
+      <div className='w-full max-w-md'>
+        <Result
+          status='error'
+          icon={<CloseCircleOutlined style={{ color: '#ff4d4f' }} />}
+          title={
+            <span className='text-2xl font-bold text-gray-900'>
+              {t('signup.result.rejected.title')}
+            </span>
+          }
+          subTitle={
+            <span className='text-sm text-gray-600'>
+              {t('signup.result.rejected.message')}
+            </span>
+          }
+          extra={[
+            <div key='note' className='mb-6'>
+              <Alert
+                message={t('signup.result.rejected.note')}
+                type='error'
+                showIcon
+              />
+            </div>,
             <Button
-              onClick={() => navigate('/register/check')}
+              key='retry'
               type='primary'
-              className='w-full'
+              size='large'
+              onClick={() => navigate('/register/check')}
+              className='w-full !h-12 !bg-[var(--Brand-color,#AA1826)] hover:!bg-[var(--Brand-color,#AA1826)]/90 mb-3'
             >
               {t('signup.result.rejected.tryAgain')}
-            </Button>
-
+            </Button>,
             <Button
-              onClick={() => navigate('/auth/login')}
+              key='login'
               type='default'
-              className='w-full'
+              size='large'
+              onClick={() => navigate('/auth/login')}
+              className='w-full !h-12'
             >
               {t('signup.result.rejected.backToLogin')}
-            </Button>
-          </div>
-        </div>
-      </Card>
+            </Button>,
+          ]}
+        />
+      </div>
     </div>
   );
 }

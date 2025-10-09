@@ -26,8 +26,8 @@ export const authenticationRoutes: RouteObject[] = [
     path: '/auth',
     element: <AuthenticationLayout />,
     children: [
-      { 
-        index: true, 
+      {
+        index: true,
         element: <Login />,
         handle: {
           titleKey: 'login.pageTitle',
@@ -35,8 +35,8 @@ export const authenticationRoutes: RouteObject[] = [
           illustration: 'login',
         } satisfies AuthLayoutMetadata,
       },
-      { 
-        path: 'login', 
+      {
+        path: 'login',
         element: <Login />,
         handle: {
           titleKey: 'login.pageTitle',
@@ -49,8 +49,8 @@ export const authenticationRoutes: RouteObject[] = [
       {
         path: 'forgot-password',
         children: [
-          { 
-            index: true, 
+          {
+            index: true,
             element: <ForgotPassword />,
             handle: {
               titleKey: 'forgotPassword.title',
@@ -58,8 +58,8 @@ export const authenticationRoutes: RouteObject[] = [
               illustration: 'forgotPassword',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'otp', 
+          {
+            path: 'otp',
             element: <Otp />,
             handle: {
               titleKey: 'otp.title',
@@ -67,8 +67,8 @@ export const authenticationRoutes: RouteObject[] = [
               illustration: 'otp',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'reset/:token', 
+          {
+            path: 'reset/:token',
             element: <ResetPassword />,
             handle: {
               titleKey: 'resetPassword.title',
@@ -83,8 +83,8 @@ export const authenticationRoutes: RouteObject[] = [
       {
         path: 'register',
         children: [
-          { 
-            index: true, 
+          {
+            index: true,
             element: <Register />,
             handle: {
               titleKey: 'signup.hibaCheck.title',
@@ -92,8 +92,8 @@ export const authenticationRoutes: RouteObject[] = [
               illustration: 'signup',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'check', 
+          {
+            path: 'check',
             element: <HibaCheck />,
             handle: {
               titleKey: 'signup.hibaCheck.title',
@@ -101,8 +101,8 @@ export const authenticationRoutes: RouteObject[] = [
               illustration: 'signup',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'otp', 
+          {
+            path: 'otp',
             element: <OtpVerify />,
             handle: {
               titleKey: 'signup.otp.title',
@@ -110,56 +110,56 @@ export const authenticationRoutes: RouteObject[] = [
               illustration: 'passwordOtp',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'profile', 
+          {
+            path: 'profile',
             element: <ProfileInfo />,
             handle: {
-              titleKey: 'signup.profile.title',
+              titleKey: 'signup.hibaCheck.title',
               illustration: 'data',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'entity', 
+          {
+            path: 'entity',
             element: <EntityInfo />,
             handle: {
-              titleKey: 'signup.entity.title',
+              titleKey: 'signup.hibaCheck.title',
               illustration: 'data',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'bank', 
+          {
+            path: 'bank',
             element: <BankInfo />,
             handle: {
-              titleKey: 'signup.bank.title',
+              titleKey: 'signup.hibaCheck.title',
               illustration: 'bank',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'admin', 
+          {
+            path: 'admin',
             element: <PlatformAdmin />,
             handle: {
-              titleKey: 'signup.admin.title',
+              titleKey: 'signup.hibaCheck.title',
               illustration: 'data',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'representative', 
+          {
+            path: 'representative',
             element: <AssociateRep />,
             handle: {
-              titleKey: 'signup.representative.title',
+              titleKey: 'signup.hibaCheck.title',
               illustration: 'data',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'result/approved', 
+          {
+            path: 'result/approved',
             element: <ResultApproved />,
             handle: {
               titleKey: 'signup.result.approved.title',
               illustration: 'data',
             } satisfies AuthLayoutMetadata,
           },
-          { 
-            path: 'result/rejected', 
+          {
+            path: 'result/rejected',
             element: <ResultRejected />,
             handle: {
               titleKey: 'signup.result.rejected.title',

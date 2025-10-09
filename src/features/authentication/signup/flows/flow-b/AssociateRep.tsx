@@ -1,22 +1,15 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Form, Input, Button as AntButton } from 'antd';
 import { useSignupStore } from '../../store';
-import Field from '../../../../../components/ui/Field';
-import { TextInput } from '../../../../../components/ui/TextInput';
-import Button from '../../../../../components/ui/Button';
 
-// Validation schema for Step 4: Association Representative
-const AssociateRepSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required'),
-  email: z.string().email('Invalid email address'),
-  position: z.string().min(1, 'Position is required'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-});
-
-type AssociateRepForm = z.infer<typeof AssociateRepSchema>;
+interface AssociateRepForm {
+  fullName: string;
+  email: string;
+  position: string;
+  phone: string;
+}
 
 // Step indicator component
 const StepIndicator = ({ currentStep }: { currentStep: number }) => {
@@ -50,106 +43,137 @@ export default function AssociateRep() {
   const navigate = useNavigate();
   const { setRepresentativeData, representativeData, setCurrentStep } =
     useSignupStore();
+  const [form] = Form.useForm<AssociateRepForm>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AssociateRepForm>({
-    resolver: zodResolver(AssociateRepSchema),
-    defaultValues: representativeData || {
-      fullName: '',
-      email: '',
-      position: '',
-      phone: '',
-    },
-  });
-
-  const onSubmit = async (data: AssociateRepForm) => {
-    setRepresentativeData(data);
-    setCurrentStep(5);
-    navigate('/register/result/approved');
+  const onSubmit = async (values: AssociateRepForm) => {
+    setIsSubmitting(true);
+    try {
+      setRepresentativeData(values);
+      setCurrentStep(5);
+      navigate('/register/result/approved');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className='w-full max-w-md space-y-8'>
       <StepIndicator currentStep={4} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
+      <Form
+        form={form}
+        onFinish={onSubmit}
+        layout='vertical'
+        initialValues={representativeData || undefined}
+        className='space-y-3'
+      >
         {/* Full Name */}
-        <Field
+        <Form.Item
+          name='fullName'
           label={t('signup.representative.fullName')}
-          error={errors.fullName?.message}
+          required={false}
+          rules={[
+            {
+              required: true,
+              message: t('signup.representative.fullNameRequired'),
+            },
+          ]}
         >
-          <TextInput
-            {...register('fullName')}
+          <Input
             placeholder={t('signup.representative.fullNamePlaceholder')}
             disabled={isSubmitting}
-            required
+            size='large'
           />
-        </Field>
+        </Form.Item>
 
-        <Field
-          label={t('signup.representative.email')}
-          error={errors.email?.message}
-        >
-          <TextInput
-            {...register('email')}
-            type='email'
-            placeholder={t('signup.representative.emailPlaceholder')}
-            disabled={isSubmitting}
-            required
-          />
-        </Field>
+        {/* Email & Position Row */}
+        <div className='grid grid-cols-2 gap-4'>
+          <Form.Item
+            name='email'
+            label={t('signup.representative.email')}
+            required={false}
+            rules={[
+              {
+                required: true,
+                message: t('signup.representative.emailRequired'),
+              },
+              {
+                type: 'email',
+                message: t('signup.representative.emailInvalid'),
+              },
+            ]}
+          >
+            <Input
+              type='email'
+              placeholder={t('signup.representative.emailPlaceholder')}
+              disabled={isSubmitting}
+              size='large'
+            />
+          </Form.Item>
 
-        {/* Position & Email Row */}
-
-        <Field
-          label={t('signup.representative.position')}
-          error={errors.position?.message}
-        >
-          <TextInput
-            {...register('position')}
-            placeholder={t('signup.representative.positionPlaceholder')}
-            disabled={isSubmitting}
-            required
-          />
-        </Field>
+          <Form.Item
+            name='position'
+            label={t('signup.representative.position')}
+            required={false}
+            rules={[
+              {
+                required: true,
+                message: t('signup.representative.positionRequired'),
+              },
+            ]}
+          >
+            <Input
+              placeholder={t('signup.representative.positionPlaceholder')}
+              disabled={isSubmitting}
+              size='large'
+            />
+          </Form.Item>
+        </div>
 
         {/* Phone Number */}
-        <Field
+        <Form.Item
+          name='phone'
           label={t('signup.representative.phone')}
-          error={errors.phone?.message}
+          required={false}
+          rules={[
+            {
+              required: true,
+              message: t('signup.representative.phoneRequired'),
+            },
+            { min: 10, message: t('signup.representative.phoneMinLength') },
+          ]}
         >
-          <TextInput
-            {...register('phone')}
+          <Input
             type='tel'
             placeholder={t('signup.representative.phonePlaceholder')}
             disabled={isSubmitting}
-            required
+            size='large'
           />
-        </Field>
+        </Form.Item>
 
         {/* Buttons */}
         <div className='flex gap-4 pt-4'>
-          <Button
-            htmlType='submit'
-            type='primary'
-            className='flex-1 !h-14'
-            disabled={isSubmitting}
-          >
-            {t('signup.entity.next')}
-          </Button>
-          <button
-            type='button'
+          <Form.Item className='flex-1 mb-0'>
+            <AntButton
+              htmlType='submit'
+              type='primary'
+              className='w-full !h-14 !bg-[var(--Brand-color,#AA1826)] hover:!bg-[var(--Brand-color,#AA1826)]/90'
+              disabled={isSubmitting}
+            >
+              {t('signup.entity.next')}
+            </AntButton>
+          </Form.Item>
+          <AntButton
+            type='text'
             onClick={() => navigate('/register/admin')}
             disabled={isSubmitting}
-            className='flex-1 h-14 rounded-[20px] text-[#8c8c90] text-base font-normal hover:bg-gray-50 transition-colors'
+            className='flex-1 h-14 !rounded-[20px] !text-[#8c8c90] !text-base hover:!bg-gray-50'
           >
             {t('signup.entity.back')}
-          </button>
+          </AntButton>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

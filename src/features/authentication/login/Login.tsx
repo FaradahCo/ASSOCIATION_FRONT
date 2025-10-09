@@ -1,60 +1,88 @@
-import { type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import Field from '../../../components/ui/Field';
-import { TextInput, PasswordInput } from '../../../components/ui/TextInput';
-import Button from '../../../components/ui/Button';
-import { Checkbox } from 'antd';
+import { Button, Checkbox, Form, Input } from 'antd';
 import { Link } from 'react-router';
+
+type LoginFormData = {
+  email: string;
+  password: string;
+  remember: boolean;
+};
 
 const Login = () => {
   const { t } = useTranslation();
+  const [form] = Form.useForm<LoginFormData>();
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-  }
+  const handleSubmit = (values: LoginFormData) => {
+    console.log('Login values:', values);
+    // TODO: Implement login logic
+  };
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className='space-y-5'>
-        <Field label={t('login.email')}>
-          <TextInput
-            id='email'
-            type='email'
-            placeholder={t('login.emailPlaceholder')}
-          />
-        </Field>
-        <Field label={t('login.password')}>
-          <PasswordInput
-            id='password'
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout='vertical'
+        initialValues={{ remember: true }}
+        className='space-y-1'
+      >
+        <Form.Item
+          name='email'
+          required={false}
+          label={t('login.email')}
+          rules={[
+            { required: true, message: t('login.emailPlaceholder') },
+            { type: 'email', message: 'Please enter a valid email' },
+          ]}
+        >
+          <Input placeholder={t('login.emailPlaceholder')} size='large' />
+        </Form.Item>
+
+        <Form.Item
+          name='password'
+          required={false}
+          label={t('login.password')}
+          rules={[{ required: true, message: t('login.passwordPlaceholder') }]}
+        >
+          <Input.Password
             placeholder={t('login.passwordPlaceholder')}
+            size='large'
           />
-        </Field>
-        <div className='flex items-center justify-between pt-2'>
-          <Checkbox className='text-sm text-gray-600'>
-            {t('login.remember')}
-          </Checkbox>
+        </Form.Item>
+
+        <div className='flex items-center justify-between pt-2 pb-4'>
+          <Form.Item name='remember' valuePropName='checked' noStyle>
+            <Checkbox className='text-sm text-gray-600'>
+              {t('login.remember')}
+            </Checkbox>
+          </Form.Item>
           <Link
             to='/auth/forgot-password'
-            className='text-sm font-medium transition-colors'
-            style={{ color: 'var(--Brand-color, #AA1826)' }}
+            className='text-sm text-primary font-medium transition-colors hover:underline'
           >
             {t('login.forgot')}
           </Link>
         </div>
-        <div className='pt-2'>
-          <Button htmlType='submit' type='primary' className='w-full'>
+
+        <Form.Item>
+          <Button
+            type='primary'
+            htmlType='submit'
+            size='large'
+            block
+            className='font-semibold '
+          >
             {t('login.submit')}
           </Button>
-        </div>
-      </form>
+        </Form.Item>
+      </Form>
 
-      <div className='mt-8 text-center'>
+      <div className='mt-6 text-center'>
         <p className='text-sm text-gray-600'>
           {t('login.noAccount')}{' '}
           <Link
             to='/auth/register'
-            className='font-medium transition-colors'
-            style={{ color: 'var(--Brand-color, #AA1826)' }}
+            className='font-medium transition-colors hover:underline text-primary'
           >
             {t('login.create')}
           </Link>

@@ -1,28 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Form, Input, Select, Button as AntButton } from 'antd';
 import { useSignupStore } from '../../store';
-import { Select } from 'antd';
-import Field from '../../../../../components/ui/Field';
-import { TextInput } from '../../../../../components/ui/TextInput';
-import Button from '../../../../../components/ui/Button';
 import FileUpload from '../../../../../components/ui/FileUpload';
 
-// Validation schema for Step 2: Bank Information
-const BankInfoSchema = z.object({
-  bankAccountName: z.string().min(1, 'Bank account name is required'),
-  bankName: z.string().min(1, 'Bank name is required'),
-  iban: z
-    .string()
-    .min(24, 'IBAN must be 24 characters')
-    .max(24, 'IBAN must be 24 characters'),
-  ibanFile: z.instanceof(File).optional().nullable(),
-});
-
-type BankInfoForm = z.infer<typeof BankInfoSchema>;
+interface BankInfoForm {
+  bankAccountName: string;
+  bankName: string;
+  iban: string;
+  ibanFile?: File | null;
+}
 
 // Step indicator component
 const StepIndicator = ({ currentStep }: { currentStep: number }) => {
@@ -56,94 +44,108 @@ export default function BankInfo() {
   const navigate = useNavigate();
   const { setBankData, bankData, setCurrentStep } = useSignupStore();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [form] = Form.useForm<BankInfoForm>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<BankInfoForm>({
-    resolver: zodResolver(BankInfoSchema),
-    defaultValues: bankData || {
-      bankAccountName: '',
-      bankName: '',
-      iban: '',
-      ibanFile: null,
-    },
-  });
-
-  const onSubmit = async (data: BankInfoForm) => {
-    setBankData({ ...data, ibanFile: uploadedFile });
-    setCurrentStep(3);
-    navigate('/register/admin');
+  const onSubmit = async (values: BankInfoForm) => {
+    setIsSubmitting(true);
+    try {
+      setBankData({ ...values, ibanFile: uploadedFile });
+      setCurrentStep(3);
+      navigate('/register/admin');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFileUpload = (file: File | null) => {
     setUploadedFile(file);
-    setValue('ibanFile', file);
+    form.setFieldValue('ibanFile', file);
   };
 
   return (
     <div className='w-full max-w-md space-y-8'>
       <StepIndicator currentStep={2} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
+      <Form
+        form={form}
+        onFinish={onSubmit}
+        layout='vertical'
+        initialValues={bankData || undefined}
+        className='space-y-3'
+      >
         {/* Bank Account Name */}
-        <Field
+        <Form.Item
+          name='bankAccountName'
           label={t('signup.bank.bankAccountName')}
-          error={errors.bankAccountName?.message}
+          required={false}
+          rules={[
+            {
+              required: true,
+              message: t('signup.bank.bankAccountNameRequired'),
+            },
+          ]}
         >
-          <TextInput
-            {...register('bankAccountName')}
+          <Input
             placeholder={t('signup.bank.bankAccountNamePlaceholder')}
             disabled={isSubmitting}
+            size='large'
           />
-        </Field>
+        </Form.Item>
 
         {/* Bank Name */}
-        <Field
+        <Form.Item
+          name='bankName'
           label={t('signup.bank.bankName')}
-          error={errors.bankName?.message}
+          required={false}
+          rules={[
+            { required: true, message: t('signup.bank.bankNameRequired') },
+          ]}
         >
-          <Controller
-            name='bankName'
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                placeholder={t('signup.bank.bankNamePlaceholder')}
-                disabled={isSubmitting}
-                className='w-full'
-                size='large'
-                showSearch
-                options={[
-                  { label: t('signup.bank.banks.alrajhi'), value: 'alrajhi' },
-                  { label: t('signup.bank.banks.sab'), value: 'sab' },
-                  { label: t('signup.bank.banks.alahli'), value: 'alahli' },
-                  { label: t('signup.bank.banks.riyad'), value: 'riyad' },
-                  { label: t('signup.bank.banks.alinma'), value: 'alinma' },
-                  { label: t('signup.bank.banks.samba'), value: 'samba' },
-                  { label: t('signup.bank.banks.aljazira'), value: 'aljazira' },
-                  { label: t('signup.bank.banks.albilad'), value: 'albilad' },
-                ]}
-              />
-            )}
+          <Select
+            placeholder={t('signup.bank.bankNamePlaceholder')}
+            disabled={isSubmitting}
+            size='large'
+            showSearch
+            options={[
+              { label: t('signup.bank.banks.alrajhi'), value: 'alrajhi' },
+              { label: t('signup.bank.banks.sab'), value: 'sab' },
+              { label: t('signup.bank.banks.alahli'), value: 'alahli' },
+              { label: t('signup.bank.banks.riyad'), value: 'riyad' },
+              { label: t('signup.bank.banks.alinma'), value: 'alinma' },
+              { label: t('signup.bank.banks.samba'), value: 'samba' },
+              { label: t('signup.bank.banks.aljazira'), value: 'aljazira' },
+              { label: t('signup.bank.banks.albilad'), value: 'albilad' },
+            ]}
           />
-        </Field>
+        </Form.Item>
 
         {/* IBAN Number */}
-        <Field label={t('signup.bank.iban')} error={errors.iban?.message}>
-          <TextInput
-            {...register('iban')}
+        <Form.Item
+          name='iban'
+          label={t('signup.bank.iban')}
+          required={false}
+          rules={[
+            { required: true, message: t('signup.bank.ibanRequired') },
+            { len: 24, message: t('signup.bank.ibanLength') },
+            {
+              pattern: /^SA\d{22}$/,
+              message: t('signup.bank.ibanFormat'),
+            },
+          ]}
+          extra={
+            <p className='text-xs text-gray-500 mt-1'>
+              {t('signup.bank.ibanHint')}
+            </p>
+          }
+        >
+          <Input
             placeholder={t('signup.bank.ibanPlaceholder')}
             maxLength={24}
             disabled={isSubmitting}
+            size='large'
           />
-          <p className='text-xs text-gray-500 mt-1'>
-            {t('signup.bank.ibanHint')}
-          </p>
-        </Field>
+        </Form.Item>
 
         {/* IBAN File Upload */}
         <FileUpload
@@ -156,24 +158,26 @@ export default function BankInfo() {
 
         {/* Buttons */}
         <div className='flex gap-4 pt-4'>
-          <Button
-            htmlType='submit'
-            type='primary'
-            className='flex-1 !h-14'
-            disabled={isSubmitting}
-          >
-            {t('signup.entity.next')}
-          </Button>
-          <button
-            type='button'
+          <Form.Item className='flex-1 mb-0'>
+            <AntButton
+              htmlType='submit'
+              type='primary'
+              className='w-full !h-14 !bg-[var(--Brand-color,#AA1826)] hover:!bg-[var(--Brand-color,#AA1826)]/90'
+              disabled={isSubmitting}
+            >
+              {t('signup.entity.next')}
+            </AntButton>
+          </Form.Item>
+          <AntButton
+            type='text'
             onClick={() => navigate('/register/entity')}
             disabled={isSubmitting}
-            className='flex-1 h-14 rounded-[20px] text-[#8c8c90] text-base font-normal hover:bg-gray-50 transition-colors'
+            className='flex-1 h-14 !rounded-[20px] !text-[#8c8c90] !text-base hover:!bg-gray-50'
           >
             {t('signup.entity.back')}
-          </button>
+          </AntButton>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

@@ -1,32 +1,17 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Form, Input, Button as AntButton } from 'antd';
 import { useSignupStore } from '../../store';
-import Field from '../../../../../components/ui/Field';
-import {
-  TextInput,
-  PasswordInput,
-} from '../../../../../components/ui/TextInput';
-import Button from '../../../../../components/ui/Button';
 
-// Validation schema for Step 3: Platform Administrator
-const PlatformAdminSchema = z
-  .object({
-    fullName: z.string().min(1, 'Full name is required'),
-    email: z.string().email('Invalid email address'),
-    position: z.string().min(1, 'Position is required'),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-
-type PlatformAdminForm = z.infer<typeof PlatformAdminSchema>;
+interface PlatformAdminForm {
+  fullName: string;
+  email: string;
+  position: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
 
 // Step indicator component
 const StepIndicator = ({ currentStep }: { currentStep: number }) => {
@@ -59,115 +44,154 @@ export default function PlatformAdmin() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setAdminData, adminData, setCurrentStep } = useSignupStore();
+  const [form] = Form.useForm<PlatformAdminForm>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<PlatformAdminForm>({
-    resolver: zodResolver(PlatformAdminSchema),
-    defaultValues: adminData || {
-      fullName: '',
-      email: '',
-      position: '',
-      phone: '',
-      password: '',
-      confirmPassword: '',
-    },
-  });
-
-  const onSubmit = async (data: PlatformAdminForm) => {
-    setAdminData(data);
-    setCurrentStep(4);
-    navigate('/register/representative');
+  const onSubmit = async (values: PlatformAdminForm) => {
+    setIsSubmitting(true);
+    try {
+      setAdminData(values);
+      setCurrentStep(4);
+      navigate('/register/representative');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className='w-full max-w-md space-y-8'>
       <StepIndicator currentStep={3} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
+      <Form
+        form={form}
+        onFinish={onSubmit}
+        layout='vertical'
+        initialValues={adminData || undefined}
+        className='space-y-3'
+      >
         {/* Full Name */}
-        <Field
+        <Form.Item
+          name='fullName'
           label={t('signup.admin.fullName')}
-          error={errors.fullName?.message}
+          required={false}
+          rules={[
+            { required: true, message: t('signup.admin.fullNameRequired') },
+          ]}
         >
-          <TextInput
-            {...register('fullName')}
+          <Input
             placeholder={t('signup.admin.fullNamePlaceholder')}
             disabled={isSubmitting}
+            size='large'
           />
-        </Field>
+        </Form.Item>
 
-        {/* Position & Email Row */}
-        <div className='grid grid-cols-1 gap-4'>
-      
-
-          <Field label={t('signup.admin.email')} error={errors.email?.message}>
-            <TextInput
-              {...register('email')}
+        {/* Email & Phone Row */}
+        <div className='grid grid-cols-2 gap-4'>
+          <Form.Item
+            name='email'
+            label={t('signup.admin.email')}
+            required={false}
+            rules={[
+              { required: true, message: t('signup.admin.emailRequired') },
+              { type: 'email', message: t('signup.admin.emailInvalid') },
+            ]}
+          >
+            <Input
               type='email'
               placeholder={t('signup.admin.emailPlaceholder')}
               disabled={isSubmitting}
+              size='large'
             />
-          </Field>
-        </div>
+          </Form.Item>
 
-        {/* Phone Number */}
-        <Field label={t('signup.admin.phone')} error={errors.phone?.message}>
-          <TextInput
-            {...register('phone')}
-            type='tel'
-            placeholder={t('signup.admin.phonePlaceholder')}
-            disabled={isSubmitting}
-          />
-        </Field>
+          <Form.Item
+            name='phone'
+            label={t('signup.admin.phone')}
+            required={false}
+            rules={[
+              { required: true, message: t('signup.admin.phoneRequired') },
+              { min: 10, message: t('signup.admin.phoneMinLength') },
+            ]}
+          >
+            <Input
+              type='tel'
+              placeholder={t('signup.admin.phonePlaceholder')}
+              disabled={isSubmitting}
+              size='large'
+            />
+          </Form.Item>
+        </div>
 
         {/* Password & Confirm Password Row */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field
-            label={t('signup.admin.confirmPassword')}
-            error={errors.confirmPassword?.message}
-          >
-            <PasswordInput
-              {...register('confirmPassword')}
-              placeholder={t('signup.admin.confirmPasswordPlaceholder')}
-              disabled={isSubmitting}
-            />
-          </Field>
-
-          <Field
+          <Form.Item
+            name='password'
             label={t('signup.admin.password')}
-            error={errors.password?.message}
+            required={false}
+            rules={[
+              { required: true, message: t('signup.admin.passwordRequired') },
+              { min: 8, message: t('signup.admin.passwordMinLength') },
+            ]}
           >
-            <PasswordInput
-              {...register('password')}
+            <Input.Password
               placeholder={t('signup.admin.passwordPlaceholder')}
               disabled={isSubmitting}
+              size='large'
             />
-          </Field>
+          </Form.Item>
+
+          <Form.Item
+            name='confirmPassword'
+            label={t('signup.admin.confirmPassword')}
+            required={false}
+            dependencies={['password']}
+            rules={[
+              {
+                required: true,
+                message: t('signup.admin.confirmPasswordRequired'),
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error(t('signup.admin.passwordMismatch'))
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              placeholder={t('signup.admin.confirmPasswordPlaceholder')}
+              disabled={isSubmitting}
+              size='large'
+            />
+          </Form.Item>
         </div>
 
         {/* Buttons */}
         <div className='flex gap-4 pt-4'>
-          <Button
-            htmlType='submit'
-            type='primary'
-            className='flex-1 !h-14'
-            disabled={isSubmitting}
-          >
-            {t('signup.entity.next')}
-          </Button>
-          <button
-            type='button'
+          <Form.Item className='flex-1 mb-0'>
+            <AntButton
+              htmlType='submit'
+              type='primary'
+              className='w-full !h-14 !bg-[var(--Brand-color,#AA1826)] hover:!bg-[var(--Brand-color,#AA1826)]/90'
+              disabled={isSubmitting}
+            >
+              {t('signup.entity.next')}
+            </AntButton>
+          </Form.Item>
+          <AntButton
+            type='text'
             onClick={() => navigate('/register/bank')}
             disabled={isSubmitting}
-            className='flex-1 h-14 rounded-[20px] text-[#8c8c90] text-base font-normal hover:bg-gray-50 transition-colors'
+            className='flex-1 h-14 !rounded-[20px] !text-[#8c8c90] !text-base hover:!bg-gray-50'
           >
             {t('signup.entity.back')}
-          </button>
+          </AntButton>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

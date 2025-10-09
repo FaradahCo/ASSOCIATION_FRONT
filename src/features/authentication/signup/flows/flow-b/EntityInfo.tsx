@@ -1,27 +1,16 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Button, Form, Input, Select } from 'antd';
 import { useSignupStore } from '../../store';
-import Field from '../../../../../components/ui/Field';
-import { TextInput } from '../../../../../components/ui/TextInput';
-import Button from '../../../../../components/ui/Button';
-import { Select } from 'antd';
 
-// Validation schema for Step 1: Organization Data
-const EntityFormSchema = z.object({
-  organizationName: z.string().min(1, 'Organization name is required'),
-  organizationEmail: z.string().email('Invalid email address'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-  region: z.string().min(1, 'Region is required'),
-  city: z.string().min(1, 'City is required'),
-  unifiedNationalNumber: z
-    .string()
-    .min(1, 'Unified national number is required'),
-});
-
-type EntityForm = z.infer<typeof EntityFormSchema>;
+type EntityForm = {
+  organizationName: string;
+  organizationEmail: string;
+  phone: string;
+  region: string;
+  city: string;
+  unifiedNationalNumber: string;
+};
 
 // Saudi Arabia regions
 const regions = [
@@ -76,130 +65,130 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 export default function EntityInfo() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [form] = Form.useForm<EntityForm>();
   const { setEntityData, entityData, setCurrentStep } = useSignupStore();
   const isRTL = i18n.language === 'ar';
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm<EntityForm>({
-    resolver: zodResolver(EntityFormSchema),
-    defaultValues: entityData || {
-      organizationName: '',
-      organizationEmail: '',
-      phone: '',
-      region: '',
-      city: '',
-      unifiedNationalNumber: '',
-    },
-  });
-
-  const selectedRegion = watch('region');
-
-  const onSubmit = (data: EntityForm) => {
-    setEntityData(data);
+  const onSubmit = (values: EntityForm) => {
+    setEntityData(values);
     setCurrentStep(2);
     navigate('/register/bank');
   };
 
-
   return (
     <div className='w-full max-w-md space-y-8'>
       <StepIndicator currentStep={1} />
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-3'>
+      <Form
+        form={form}
+        onFinish={onSubmit}
+        layout='vertical'
+        className='space-y-3'
+        initialValues={entityData || undefined}
+      >
         {/* Organization Name */}
-        <Field
+        <Form.Item
+          name='organizationName'
           label={t('signup.entity.organizationName')}
-          error={errors.organizationName?.message}
+          required={false}
+          rules={[{ required: true, message: 'Organization name is required' }]}
         >
-          <TextInput
-            {...register('organizationName')}
+          <Input
             placeholder={t('signup.entity.organizationNamePlaceholder')}
-            disabled={isSubmitting}
+            size='large'
           />
-        </Field>
+        </Form.Item>
 
         {/* Organization Email & Phone Row */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field
+          <Form.Item
+            name='organizationEmail'
             label={t('signup.entity.organizationEmail')}
-            error={errors.organizationEmail?.message}
+            required={false}
+            rules={[
+              { required: true, message: 'Email is required' },
+              { type: 'email', message: 'Invalid email address' },
+            ]}
           >
-            <TextInput
-              {...register('organizationEmail')}
+            <Input
               type='email'
               placeholder={t('signup.entity.organizationEmailPlaceholder')}
-              disabled={isSubmitting}
+              size='large'
             />
-          </Field>
-          <Field label={t('signup.entity.phone')} error={errors.phone?.message}>
-            <TextInput
-              {...register('phone')}
+          </Form.Item>
+          <Form.Item
+            name='phone'
+            label={t('signup.entity.phone')}
+            required={false}
+            rules={[
+              { required: true, message: 'Phone is required' },
+              { min: 10, message: 'Phone number must be at least 10 digits' },
+            ]}
+          >
+            <Input
               type='tel'
               placeholder={t('signup.entity.phonePlaceholder')}
-              disabled={isSubmitting}
+              size='large'
             />
-          </Field>
+          </Form.Item>
         </div>
 
         {/* Region & City Row */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field
+          <Form.Item
+            name='region'
             label={t('signup.entity.region')}
-            error={errors.region?.message}
+            required={false}
+            rules={[{ required: true, message: 'Region is required' }]}
           >
             <Select
               placeholder={t('signup.entity.regionPlaceholder')}
-              value={selectedRegion || undefined}
-              onChange={(value) =>
-                setValue('region', value, { shouldValidate: true })
-              }
-              className='w-full'
               size='large'
-              disabled={isSubmitting}
-              status={errors.region ? 'error' : ''}
               options={regions.map((r) => ({
                 value: r.value,
                 label: isRTL ? r.label.ar : r.label.en,
               }))}
             />
-          </Field>
-          <Field label={t('signup.entity.city')} error={errors.city?.message}>
-            <TextInput
-              {...register('city')}
+          </Form.Item>
+          <Form.Item
+            name='city'
+            label={t('signup.entity.city')}
+            required={false}
+            rules={[{ required: true, message: 'City is required' }]}
+          >
+            <Input
               placeholder={t('signup.entity.cityPlaceholder')}
-              disabled={isSubmitting}
+              size='large'
             />
-          </Field>
+          </Form.Item>
         </div>
 
         {/* Unified National Number */}
-        <Field
+        <Form.Item
+          name='unifiedNationalNumber'
           label={t('signup.entity.unn')}
-          error={errors.unifiedNationalNumber?.message}
+          required={false}
+          rules={[
+            { required: true, message: 'Unified national number is required' },
+          ]}
         >
-          <TextInput
-            {...register('unifiedNationalNumber')}
-            placeholder={t('signup.entity.unnPlaceholder')}
-            disabled={isSubmitting}
-          />
-        </Field>
+          <Input placeholder={t('signup.entity.unnPlaceholder')} size='large' />
+        </Form.Item>
 
         {/* Buttons */}
         <div className='flex gap-4 pt-4'>
-          <Button
-            htmlType='submit'
-            type='primary'
-            className='flex-1 !h-14'
-            disabled={isSubmitting}
-          >
-            {t('signup.hibaCheck.submit')}
-          </Button>
+          <Form.Item className='flex-1 mb-0'>
+            <Button
+              htmlType='submit'
+              type='primary'
+              size='large'
+              block
+              className='!h-14 font-semibold'
+            >
+              {t('signup.hibaCheck.submit')}
+            </Button>
+          </Form.Item>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

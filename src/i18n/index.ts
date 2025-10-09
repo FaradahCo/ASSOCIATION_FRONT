@@ -170,6 +170,7 @@ const resources = {
         flowB: 'Flow B: New Organization',
       },
       otp: {
+        title: 'Verify Your Identity',
         subtitle: 'We have sent a code to {{email}}. Expires in {{time}}.',
         codeLabel: 'Verification Code',
         verify: 'Verify',
@@ -184,7 +185,8 @@ const resources = {
       },
       resetPassword: {
         title: 'Set New Password',
-        subtitle: 'Use at least 11 characters with letters, numbers, and a special symbol.',
+        subtitle:
+          'Use at least 11 characters with letters, numbers, and a special symbol.',
         password: 'New Password',
         confirmPassword: 'Confirm New Password',
         submit: 'Update Password',
@@ -194,9 +196,11 @@ const resources = {
         emailNotRegistered: 'This email is not registered.',
         otpExpired: 'Verification code has expired. Please request a new one.',
         otpInvalid: 'Invalid verification code. Please try again.',
-        otpMaxAttempts: 'Too many failed attempts. Please request a new verification code.',
+        otpMaxAttempts:
+          'Too many failed attempts. Please request a new verification code.',
         passwordsDontMatch: 'New passwords do not match. Please try again.',
-        weakPassword: 'Password must be at least 11 characters and include letters, numbers, and special symbols.',
+        weakPassword:
+          'Password must be at least 11 characters and include letters, numbers, and special symbols.',
       },
     },
   },
@@ -360,13 +364,7 @@ const resources = {
             backToLogin: 'العودة لتسجيل الدخول',
           },
         },
-        forgotPassword: {
-          title: 'هل نسيت كلمة المرور؟',
-          subtitle: 'أدخل بريدك الإلكتروني لتلقي رمز لمرة واحدة.',
-          emailLabel: 'عنوان البريد الإلكتروني',
-          submit: 'إرسال رمز التحقق',
-          successTitle: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.',
-        },
+
         otpLogin: {
           title: 'أدخل الرمز المكون من 6 أرقام',
           subtitle: 'لقد أرسلنا رمزًا إلى {{email}}. ينتهي في {{time}}.',
@@ -401,6 +399,7 @@ const resources = {
         flowB: 'المسار ب: منظمة جديدة',
       },
       otp: {
+        title: 'التحقق من هويتك',
         subtitle: 'لقد أرسلنا رمزًا إلى {{email}}. ينتهي في {{time}}.',
         codeLabel: 'رمز التحقق',
         verify: 'تحقق',
@@ -409,8 +408,11 @@ const resources = {
         editEmail: 'تغيير البريد الإلكتروني',
       },
       forgotPassword: {
+        title: 'هل نسيت كلمة المرور؟',
+        subtitle: 'أدخل بريدك الإلكتروني لتلقي رمز لمرة واحدة.',
         emailLabel: 'عنوان البريد الإلكتروني',
         submit: 'إرسال رمز التحقق',
+        backToLogin: 'العودة لتسجيل الدخول',
         successTitle: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.',
       },
       resetPassword: {
@@ -426,8 +428,10 @@ const resources = {
         otpExpired: 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.',
         otpInvalid: 'رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.',
         otpMaxAttempts: 'محاولات كثيرة فاشلة. يرجى طلب رمز تحقق جديد.',
-        passwordsDontMatch: 'كلمات المرور الجديدة غير متطابقة. يرجى المحاولة مرة أخرى.',
-        weakPassword: 'يجب أن تحتوي كلمة المرور على 11 حرفًا على الأقل وتتضمن أحرفًا وأرقامًا ورموزًا خاصة.',
+        passwordsDontMatch:
+          'كلمات المرور الجديدة غير متطابقة. يرجى المحاولة مرة أخرى.',
+        weakPassword:
+          'يجب أن تحتوي كلمة المرور على 11 حرفًا على الأقل وتتضمن أحرفًا وأرقامًا ورموزًا خاصة.',
       },
     },
   },

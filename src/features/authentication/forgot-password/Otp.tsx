@@ -1,15 +1,15 @@
-import { type FormEvent, useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import Button from '../../../components/ui/Button';
+import { Button, Input, Alert, Form } from 'antd';
 import { useAuthRecoveryStore } from '../../authentication/login/store';
 
 const Otp = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
+  const [form] = Form.useForm();
+  const [otp, setOtp] = useState('');
   const [timeLeft, setTimeLeft] = useState(0);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const {
     email,
@@ -50,55 +50,18 @@ const Otp = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
-
-    const newValues = [...otpValues];
-    newValues[index] = value.slice(-1);
-    setOtpValues(newValues);
-
-    // Auto-advance to next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
+  const handleOtpChange = (value: string) => {
+    setOtp(value);
     if (error) clearError();
   };
 
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === 'Backspace' && !otpValues[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text/plain').replace(/\D/g, '');
-    const pastedArray = pastedData.slice(0, 6).split('');
-
-    const newValues = [...otpValues];
-    pastedArray.forEach((digit, index) => {
-      if (index < 6) newValues[index] = digit;
-    });
-    setOtpValues(newValues);
-
-    const nextIndex = Math.min(pastedArray.length, 5);
-    inputRefs.current[nextIndex]?.focus();
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const code = otpValues.join('');
-
-    if (code.length !== 6) {
+  const handleSubmit = async () => {
+    if (otp.length !== 6) {
       return;
     }
 
     try {
-      const token = await verifyOtp(code);
+      const token = await verifyOtp(otp);
       navigate(`/auth/forgot-password/reset/${token}`);
     } catch {
       // Error is handled in store
@@ -106,10 +69,10 @@ const Otp = () => {
   };
 
   const handleResend = async () => {
+    setOtp('');
     await resendOtp();
   };
 
-  const isOtpComplete = otpValues.every((val) => val !== '');
   const canResend = timeLeft === 0 && !loading;
 
   useEffect(() => {
@@ -134,48 +97,40 @@ const Otp = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className='space-y-6'>
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-4'>
-            {t('otp.codeLabel')}
-          </label>
-          <div className='flex gap-3 justify-center'>
-            {otpValues.map((value, index) => (
-              <input
-                key={index}
-                ref={(el) => {
-                  inputRefs.current[index] = el;
-                }}
-                type='text'
-                value={value}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onPaste={handlePaste}
-                className='w-12 h-12 text-center text-lg font-semibold border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white'
-                maxLength={1}
-                aria-label={`Digit ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout='vertical'
+        className='space-y-6'
+      >
+        <Form.Item label={t('otp.codeLabel')} required={false}>
+          <Input.OTP
+            length={6}
+            value={otp}
+            onChange={handleOtpChange}
+            size='large'
+            disabled={loading}
+          />
+        </Form.Item>
 
         {error && (
-          <div className='p-3 rounded-lg bg-red-50 border border-red-200'>
-            <p className='text-sm text-red-600'>{error}</p>
-          </div>
+          <Alert message={error} type='error' showIcon className='mb-4' />
         )}
 
-        <div className='pt-2'>
+        <Form.Item>
           <Button
-            htmlType='submit'
             type='primary'
-            className='w-full'
-            disabled={!isOtpComplete || loading}
+            htmlType='submit'
+            size='large'
+            block
+            loading={loading}
+            disabled={otp.length !== 6}
+            className='font-semibold'
           >
-            {loading ? 'Verifying...' : t('otp.verify')}
+            {t('otp.verify')}
           </Button>
-        </div>
-      </form>
+        </Form.Item>
+      </Form>
 
       <div className='mt-8 text-center space-y-3'>
         <div>
@@ -184,7 +139,6 @@ const Otp = () => {
               type='button'
               onClick={handleResend}
               className='text-sm font-medium transition-colors hover:underline'
-              style={{ color: 'var(--Brand-color, #AA1826)' }}
               disabled={loading}
             >
               {t('otp.resend')}
@@ -200,7 +154,6 @@ const Otp = () => {
           type='button'
           onClick={() => navigate('/auth/forgot-password')}
           className='text-sm font-medium transition-colors hover:underline'
-          style={{ color: 'var(--Brand-color, #AA1826)' }}
         >
           {t('otp.editEmail')}
         </button>

@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { HibaCheckSchema } from '../schemas/hibaCheck';
+import { Button, Form, Input, Alert } from 'antd';
 import { useSignupStore } from '../store';
-import Field from '../../../../components/ui/Field';
-import { TextInput } from '../../../../components/ui/TextInput';
-import Button from '../../../../components/ui/Button';
 
 type HibaCheckForm = {
   unifiedNationalNumber: string;
@@ -16,24 +11,14 @@ type HibaCheckForm = {
 export default function HibaCheck() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [form] = Form.useForm<HibaCheckForm>();
   const { setFlow, setHibaData, setLoading } = useSignupStore();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoadingState] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting, touchedFields },
-  } = useForm<HibaCheckForm>({
-    resolver: zodResolver(HibaCheckSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      unifiedNationalNumber: '',
-    },
-  });
-
-  const onSubmit = async (data: HibaCheckForm) => {
+  const onSubmit = async (values: HibaCheckForm) => {
     setError(null);
+    setLoadingState(true);
     setLoading(true);
 
     try {
@@ -41,7 +26,7 @@ export default function HibaCheck() {
       const response = await fetch('/api/hiba/check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(values),
       });
 
       const result = await response.json();
@@ -53,7 +38,7 @@ export default function HibaCheck() {
         );
         setFlow('A');
         setHibaData({
-          unifiedNationalNumber: data.unifiedNationalNumber,
+          unifiedNationalNumber: values.unifiedNationalNumber,
           organizationName: result.organizationName,
           isVerified: true,
         });
@@ -65,7 +50,7 @@ export default function HibaCheck() {
         );
         setFlow('B');
         setHibaData({
-          unifiedNationalNumber: data.unifiedNationalNumber,
+          unifiedNationalNumber: values.unifiedNationalNumber,
           isVerified: false,
         });
         navigate('/register/entity');
@@ -73,43 +58,56 @@ export default function HibaCheck() {
     } catch {
       setError(t('signup.hibaCheckError'));
     } finally {
+      setLoadingState(false);
       setLoading(false);
     }
   };
 
+  const handleFieldsChange = () => {
+    if (error) setError(null);
+  };
+
   return (
     <div className='w-full max-w-md space-y-8'>
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-8'>
-        <Field
+      <Form
+        form={form}
+        onFinish={onSubmit}
+        onFieldsChange={handleFieldsChange}
+        layout='vertical'
+        className='space-y-8'
+      >
+        <Form.Item
+          name='unifiedNationalNumber'
+          required={false}
           label={t('signup.hibaCheck.unnLabel')}
-          error={
-            touchedFields.unifiedNationalNumber
-              ? errors.unifiedNationalNumber?.message
-              : undefined
-          }
+          rules={[
+            { required: true, message: 'License number is required' },
+            { min: 10, message: 'License number must be at least 10 digits' },
+          ]}
         >
-          <TextInput
-            {...register('unifiedNationalNumber')}
+          <Input
             placeholder={t('signup.hibaCheck.unnPlaceholder')}
-            disabled={isSubmitting}
+            size='large'
           />
-        </Field>
+        </Form.Item>
 
         {error && (
-          <div className='p-3 rounded-lg bg-red-50 border border-red-200'>
-            <p className='text-sm text-red-600'>{error}</p>
-          </div>
+          <Alert message={error} type='error' showIcon className='mb-4' />
         )}
 
-        <Button
-          htmlType='submit'
-          type='primary'
-          className='w-full !h-14'
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? t('common.loading') : t('signup.hibaCheck.submit')}
-        </Button>
-      </form>
+        <Form.Item>
+          <Button
+            htmlType='submit'
+            type='primary'
+            size='large'
+            block
+            loading={loading}
+            className='!h-14 font-semibold'
+          >
+            {t('signup.hibaCheck.submit')}
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 }
