@@ -11,7 +11,7 @@ export const TextInput = ({
   ...props
 }: ComponentProps<typeof Input> & BaseProps) => {
   const classes =
-    '!h-12 !rounded-lg !border-neutral-300 !px-4 !text-sm !bg-white hover:!border-neutral-400 focus:!border-blue-500 focus:!ring-2 focus:!ring-blue-500/20 !shadow-sm';
+    '!h-11 !rounded-xl !border-neutral-200 !px-3 !text-sm focus:!ring-2 focus:!ring-red-700/30 focus:!border-red-700/50';
   return <Input className={`${classes} ${className ?? ''}`} {...props} />;
 };
 
@@ -20,7 +20,7 @@ export const PasswordInput = ({
   ...props
 }: ComponentProps<typeof Input.Password> & BaseProps) => {
   const classes =
-    '!h-12 !rounded-lg !border-neutral-300 !px-4 !text-sm !bg-white hover:!border-neutral-400 focus:!border-blue-500 focus:!ring-2 focus:!ring-blue-500/20 !shadow-sm';
+    '!h-11 !rounded-xl !border-neutral-200 !px-3 !text-sm focus:!ring-2 focus:!ring-red-700/30 focus:!border-red-700/50';
   return (
     <Input.Password className={`${classes} ${className ?? ''}`} {...props} />
   );

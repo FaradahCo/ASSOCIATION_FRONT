@@ -1,11 +1,11 @@
 import { type FormEvent, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
-import Field from '../../components/ui/Field';
-import { PasswordInput } from '../../components/ui/TextInput';
-import Button from '../../components/ui/Button';
-import { useAuthRecoveryStore } from './store';
-import { isStrongPassword, passwordStrengthHint } from './validation';
+import Field from '../../../components/ui/Field';
+import { PasswordInput } from '../../../components/ui/TextInput';
+import Button from '../../../components/ui/Button';
+import { useAuthRecoveryStore } from '../../authentication/login/store';
+import { isStrongPassword, passwordStrengthHint } from '../../authentication/login/validation';
 
 const ResetPassword = () => {
   const { t } = useTranslation();

@@ -1,8 +1,8 @@
 import { type FormEvent, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import Button from '../../components/ui/Button';
-import { useAuthRecoveryStore } from './store';
+import Button from '../../../components/ui/Button';
+import { useAuthRecoveryStore } from '../../authentication/login/store';
 
 const Otp = () => {
   const { t } = useTranslation();
@@ -10,18 +10,17 @@ const Otp = () => {
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
   const [timeLeft, setTimeLeft] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  
-  const { 
-    email, 
-    otpExpiresAt, 
-    verifyOtp, 
-    resendOtp, 
-    loading, 
-    error, 
-    clearError, 
-    clearSuccess 
-  } = useAuthRecoveryStore();
 
+  const {
+    email,
+    otpExpiresAt,
+    verifyOtp,
+    resendOtp,
+    loading,
+    error,
+    clearError,
+    clearSuccess,
+  } = useAuthRecoveryStore();
 
   useEffect(() => {
     if (!email) {
@@ -29,15 +28,14 @@ const Otp = () => {
     }
   }, [email, navigate]);
 
-
   useEffect(() => {
     if (!otpExpiresAt) return;
-    
+
     const interval = setInterval(() => {
       const now = Date.now();
       const remaining = Math.max(0, Math.floor((otpExpiresAt - now) / 1000));
       setTimeLeft(remaining);
-      
+
       if (remaining === 0) {
         clearInterval(interval);
       }
@@ -54,20 +52,23 @@ const Otp = () => {
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
-    
+
     const newValues = [...otpValues];
     newValues[index] = value.slice(-1);
     setOtpValues(newValues);
-    
+
     // Auto-advance to next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
-    
+
     if (error) clearError();
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === 'Backspace' && !otpValues[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -77,13 +78,13 @@ const Otp = () => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text/plain').replace(/\D/g, '');
     const pastedArray = pastedData.slice(0, 6).split('');
-    
+
     const newValues = [...otpValues];
     pastedArray.forEach((digit, index) => {
       if (index < 6) newValues[index] = digit;
     });
     setOtpValues(newValues);
-    
+
     const nextIndex = Math.min(pastedArray.length, 5);
     inputRefs.current[nextIndex]?.focus();
   };
@@ -91,14 +92,14 @@ const Otp = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const code = otpValues.join('');
-    
+
     if (code.length !== 6) {
       return;
     }
 
     try {
       const token = await verifyOtp(code);
-      navigate(`/auth/reset-password/${token}`);
+      navigate(`/auth/forgot-password/reset/${token}`);
     } catch {
       // Error is handled in store
     }
@@ -108,7 +109,7 @@ const Otp = () => {
     await resendOtp();
   };
 
-  const isOtpComplete = otpValues.every(val => val !== '');
+  const isOtpComplete = otpValues.every((val) => val !== '');
   const canResend = timeLeft === 0 && !loading;
 
   useEffect(() => {
@@ -126,9 +127,9 @@ const Otp = () => {
     <div>
       <div className='mb-8 text-center'>
         <p className='text-sm text-gray-600'>
-          {t('otp.subtitle', { 
-            email, 
-            time: timeLeft > 0 ? formatTime(timeLeft) : '0:00'
+          {t('otp.subtitle', {
+            email,
+            time: timeLeft > 0 ? formatTime(timeLeft) : '0:00',
           })}
         </p>
       </div>
@@ -142,11 +143,13 @@ const Otp = () => {
             {otpValues.map((value, index) => (
               <input
                 key={index}
-                ref={el => { inputRefs.current[index] = el; }}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
                 type='text'
                 value={value}
-                onChange={e => handleOtpChange(index, e.target.value)}
-                onKeyDown={e => handleKeyDown(index, e)}
+                onChange={(e) => handleOtpChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
                 className='w-12 h-12 text-center text-lg font-semibold border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white'
                 maxLength={1}
@@ -163,10 +166,10 @@ const Otp = () => {
         )}
 
         <div className='pt-2'>
-          <Button 
-            htmlType='submit' 
-            type='primary' 
-            className='w-full' 
+          <Button
+            htmlType='submit'
+            type='primary'
+            className='w-full'
             disabled={!isOtpComplete || loading}
           >
             {loading ? 'Verifying...' : t('otp.verify')}
@@ -192,7 +195,7 @@ const Otp = () => {
             </p>
           )}
         </div>
-        
+
         <button
           type='button'
           onClick={() => navigate('/auth/forgot-password')}

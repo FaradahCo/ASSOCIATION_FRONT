@@ -1,8 +1,8 @@
 import { type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import Field from '../../components/ui/Field';
-import { TextInput, PasswordInput } from '../../components/ui/TextInput';
-import Button from '../../components/ui/Button';
+import Field from '../../../components/ui/Field';
+import { TextInput, PasswordInput } from '../../../components/ui/TextInput';
+import Button from '../../../components/ui/Button';
 import { Checkbox } from 'antd';
 import { Link } from 'react-router';
 

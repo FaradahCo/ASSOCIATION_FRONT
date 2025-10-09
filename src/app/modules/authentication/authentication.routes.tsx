@@ -1,12 +1,25 @@
 import type { RouteObject } from 'react-router';
 import AuthenticationLayout from '../../layouts/authenticationLayout';
-import Login from './login/login';
-import Register from './register/register';
-import VerifyOtp from './verify-otp/verifyOtp';
-import CreateNewPassword from './createNewPassword/createNewPassword';
-import ForgotPassword from './forgot-password/forgotPassword';
-import Otp from './otp/otp';
-import ResetPassword from './reset-password/resetPassword';
+
+// Login Flow
+import Login from './login-flow/login';
+
+// Forgot Password Flow
+import ForgotPassword from './forgot-password-flow/forgotPassword';
+import Otp from './forgot-password-flow/otp';
+import ResetPassword from './forgot-password-flow/resetPassword';
+
+// Signup Flow
+import Register from './signup-flow/register';
+import HibaCheck from './signup-flow/hibaCheck';
+import OtpVerify from './signup-flow/otpVerify';
+import ProfileInfo from './signup-flow/profileInfo';
+import EntityInfo from './signup-flow/entityInfo';
+import BankInfo from './signup-flow/bankInfo';
+import PlatformAdmin from './signup-flow/platformAdmin';
+import AssociateRep from './signup-flow/associateRep';
+import ResultApproved from './signup-flow/resultApproved';
+import ResultRejected from './signup-flow/resultRejected';
 
 export const authenticationRoutes: RouteObject[] = [
   {
@@ -15,20 +28,33 @@ export const authenticationRoutes: RouteObject[] = [
     children: [
       { index: true, element: <Login /> },
       { path: 'login', element: <Login /> },
-      { path: 'register', element: <Register /> },
-         { path: 'forgot-password', element: <ForgotPassword /> },
-      { path: 'otp', element: <Otp /> },
-      { path: 'reset-password/:token', element: <ResetPassword /> },
+
+      // Forgot Password Flow
       {
-        path: 'verify-otp',
-        element: <VerifyOtp />,
+        path: 'forgot-password',
+        children: [
+          { index: true, element: <ForgotPassword /> },
+          { path: 'otp', element: <Otp /> },
+          { path: 'reset/:token', element: <ResetPassword /> },
+        ],
       },
+
+      // Signup Flow
       {
-        path: 'create-new-password',
-        element: <CreateNewPassword />,
+        path: 'register',
+        children: [
+          { index: true, element: <Register /> },
+          { path: 'check', element: <HibaCheck /> },
+          { path: 'otp', element: <OtpVerify /> },
+          { path: 'profile', element: <ProfileInfo /> }, // Flow A: Simple profile after OTP
+          { path: 'entity', element: <EntityInfo /> }, // Flow B: Organization data after check
+          { path: 'bank', element: <BankInfo /> },
+          { path: 'admin', element: <PlatformAdmin /> },
+          { path: 'representative', element: <AssociateRep /> },
+          { path: 'result/approved', element: <ResultApproved /> },
+          { path: 'result/rejected', element: <ResultRejected /> },
+        ],
       },
-     
- 
     ],
   },
 ];
